@@ -1,38 +1,68 @@
 ﻿
 using Fred68.GenDictionary;
+using Fred68.InputForm;
+using System.Text;
 
 namespace Fred68.InputForm
 {
-    public class InputForm
-    {
-        public class Info
+	public class InputForm : Form
+	{
+
+		
+
+		List<InputInfo> _datList;           // Alternativa: Dictionary<string,Info> _dict;
+
+
+		private void InitializeComponent()
 		{
-			public string	_name;
-			public bool		_readonly;
-			public Dat		_dat;
+			button1 = new Button();
+			button2 = new Button();
+			SuspendLayout();
+			// 
+			// button1
+			// 
+			button1.DialogResult = DialogResult.OK;
+			button1.Location = new Point(207,236);
+			button1.Name = "button1";
+			button1.Size = new Size(75,23);
+			button1.TabIndex = 0;
+			button1.Text = "OK";
+			button1.UseVisualStyleBackColor = true;
+			// 
+			// button2
+			// 
+			button2.DialogResult = DialogResult.Cancel;
+			button2.Location = new Point(126,236);
+			button2.Name = "button2";
+			button2.Size = new Size(75,23);
+			button2.TabIndex = 1;
+			button2.Text = "Cancel";
+			button2.UseVisualStyleBackColor = true;
+			// 
+			// InputForm
+			// 
+			ClientSize = new Size(284,261);
+			Controls.Add(button2);
+			Controls.Add(button1);
+			Name = "InputForm";
+			ResumeLayout(false);
 		}
 
-		Info[] x;						// Soluzione 1
-		Dictionary<string,Info> _dict;  // Soluzione 2	(Info, ma senza _name)
-
-
-		public InputForm()
+		public InputForm(List<InputInfo> datList)
 		{
-			x = new Info[2];
-			x[0] = new Info();
-			x[1] = new Info();
+			_datList = datList;
 
-			x[0]._name = "Pippo";
-			x[0]._readonly = false;
-			x[0]._dat = new Dat(123.5f);
+			StringBuilder sb = new StringBuilder();
+			foreach (InputInfo info in _datList)
+			{
+				sb.AppendLine($"{info.Name}:{info.Dt.Get()}");	
+			}
+			MessageBox.Show(sb.ToString());
 
-			x[1]._name = "Pluto";
-			x[1]._readonly = false;
-			x[1]._dat = new Dat("Antani");
-
-			MessageBox.Show($"{x[0]._name}: {x[0]._dat.Get()} {Environment.NewLine} {x[1]._name}: {x[1]._dat.Get()} ");
-
+			InitializeComponent();
 		}
 
+		private Button button1;
+		private Button button2;
 	}
 }
