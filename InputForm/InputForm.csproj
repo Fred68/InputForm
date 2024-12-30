@@ -8,6 +8,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="InputInfo.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\CfgReader.NET\CfgReaderLib\CfgReaderLib.csproj" />
   </ItemGroup>
 
