@@ -86,6 +86,8 @@ namespace Fred68.InputForms
 
 		}
 
+		static Icon _icon;		// File di icona
+
 		FormData _fd;
 		int _maxTxtLength;
 		Label[] _lblNames;
@@ -152,7 +154,12 @@ namespace Fred68.InputForms
 			PerformLayout();
 		}
 
-		public InputForm(FormData fd,int maxTxtLength = 20)
+		public static void SetIcon(Icon icon)
+		{
+			_icon = icon;
+		}
+
+		public InputForm(FormData fd, int maxTxtLength = 20)
 		{
 			_isOk = true;
 			_fd = fd;
@@ -163,11 +170,15 @@ namespace Fred68.InputForms
 			{
 				sb.AppendLine($"{info.Name}:{info.Dt.Get()}");
 			}
-
+			if(_icon != null)
+			{
+				this.Icon = _icon;
+			}
 			InitializeComponent();
 			SetupForm();
 		}
 
+		
 		void SetupForm()
 		{
 			int _xNames, _xSpace, _ySpace;

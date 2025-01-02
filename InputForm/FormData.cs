@@ -47,6 +47,14 @@ namespace InputForms
 			data = new List<InputForm.InputInfo>();
 		}
 
+		#warning Vedere se funziona
+		public bool Add(string name, dynamic x, bool read_only = false, bool dropdown = false)
+		{
+			bool ret = isFree(name);
+			if(ret)	data.Add(new InputForm.InputInfo(name, x, read_only, dropdown));
+			return ret;
+
+		}
 		/// <summary>
 		/// Add integer
 		/// </summary>
