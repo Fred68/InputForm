@@ -34,11 +34,34 @@ namespace InputForms
 			return !found;
 		}
 
+		/// <summary>
+		/// Element Count
+		/// </summary>
 		public int Count
 		{
 			get { return data.Count; }
 		}
-
+		
+		/// <summary>
+		/// True is any element has benn modified
+		/// </summary>
+		/// <returns></returns>
+		public bool isModified
+		{
+			get
+			{
+				bool mod = false;
+				foreach (InputForm.InputInfo info in data)
+				{
+					if(info.isModified)
+					{
+						mod = true;
+						break;
+					}
+				}
+				return mod;
+			}
+		}
 		/// <summary>
 		/// Ctor
 		/// </summary>
