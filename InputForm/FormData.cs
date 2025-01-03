@@ -14,6 +14,7 @@ namespace InputForms
 	public class FormData
 	{
 		List<InputForm.InputInfo> data;
+		bool _isValid;
 
 		/// <summary>
 		/// Is name (key) free ?
@@ -61,16 +62,31 @@ namespace InputForms
 				}
 				return mod;
 			}
+			set
+			{
+				foreach (InputForm.InputInfo info in data)
+				{
+					info.isModified = value;
+				}
+			}
+			
 		}
+
+		public bool isValid
+		{
+			get {return _isValid; }
+			set {_isValid = value;}
+		}
+
 		/// <summary>
 		/// Ctor
 		/// </summary>
 		public FormData()
 		{
 			data = new List<InputForm.InputInfo>();
+			_isValid = false;
 		}
 
-		#warning Vedere se funziona
 		public bool Add(string name, dynamic x, bool read_only = false, bool dropdown = false)
 		{
 			bool ret = isFree(name);

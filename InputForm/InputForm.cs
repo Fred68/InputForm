@@ -11,6 +11,11 @@ namespace Fred68.InputForms
 	{
 		static string tbPrefixName = "_tbValue";
 		
+		/// <summary>
+		/// /////////////////////////////////////
+		/// Input info
+		/// /////////////////////////////////////
+		/// </summary>
 		public class InputInfo
 		{
 			string	_name;
@@ -94,6 +99,13 @@ namespace Fred68.InputForms
 		Label[] _lblTypes;
 		List<Control> _tbValues;
 		bool _isOk;
+		bool _confirmData;
+
+		private Button btOK;
+		private Label label1;
+		private TextBox textBox1;
+		private Button btCancel;
+
 
 		private void InitializeComponent()
 		{
@@ -106,7 +118,7 @@ namespace Fred68.InputForms
 			// btOK
 			// 
 			btOK.DialogResult = DialogResult.OK;
-			btOK.Location = new Point(85,36);
+			btOK.Location = new Point(127,36);
 			btOK.Name = "btOK";
 			btOK.Size = new Size(75,23);
 			btOK.TabIndex = 0;
@@ -116,7 +128,7 @@ namespace Fred68.InputForms
 			// btCancel
 			// 
 			btCancel.DialogResult = DialogResult.Cancel;
-			btCancel.Location = new Point(4,36);
+			btCancel.Location = new Point(46,36);
 			btCancel.Name = "btCancel";
 			btCancel.Size = new Size(75,23);
 			btCancel.TabIndex = 1;
@@ -144,7 +156,7 @@ namespace Fred68.InputForms
 			// 
 			// InputForm
 			// 
-			ClientSize = new Size(365,229);
+			ClientSize = new Size(218,77);
 			Controls.Add(textBox1);
 			Controls.Add(label1);
 			Controls.Add(btCancel);
@@ -159,11 +171,12 @@ namespace Fred68.InputForms
 			_icon = icon;
 		}
 
-		public InputForm(FormData fd, int maxTxtLength = 20)
+		public InputForm(FormData fd, bool confirmData = false, int maxTxtLength = 50)
 		{
 			_isOk = true;
 			_fd = fd;
 			_maxTxtLength = maxTxtLength;
+			_confirmData = confirmData;
 
 			StringBuilder sb = new StringBuilder();
 			foreach(InputForm.InputInfo info in _fd.Info())
@@ -177,16 +190,25 @@ namespace Fred68.InputForms
 			InitializeComponent();
 			SetupForm();
 		}
-
 		
 		void SetupForm()
 		{
 			int _xNames, _xSpace, _ySpace;
 			int _yName, _yValue, _yStep;
 
+			int lTxt = 1;									// Lunghezza del testo
+			for(int i = 0;i < _fd.Count;i++)
+			{
+				int lFdTxt;
+				bool isbool = _fd.Info(i).Dt.Get().GetType().ToString() == "System.Boolean";
+				lFdTxt = isbool ? 1 : ((_fd.Info(i).Dt.Get()).ToString()).Length;
+				if(lFdTxt > lTxt)	lTxt = lFdTxt;
+			}
 			Font fontTxtbox = textBox1.Font;                // Legge il font della textbox e calcola la larghezza massima
-			int txtbWidt = TextRenderer.MeasureText(new string('8',_maxTxtLength),fontTxtbox).Width;
-
+			int txtbWidt = TextRenderer.MeasureText(new string('8',int.Min(lTxt,_maxTxtLength)),fontTxtbox).Width;
+			if(txtbWidt < textBox1.Width)
+				txtbWidt = textBox1.Width;					// Corregge se troppo corto
+				
 			_xNames = label1.Location.X;                    // Imposta le origini ed il passo
 			_yName = label1.Location.Y;
 			_yValue = textBox1.Location.Y;
@@ -203,7 +225,8 @@ namespace Fred68.InputForms
 			lblxmax = tbxmax = lbvmax = -1;
 
 			SuspendLayout();
-			for(int i = 0;i < _fd.Count;i++)
+			
+			for(int i = 0;i < _fd.Count;i++)				// Crea le etichette
 			{
 				_lblNames[i] = new Label();
 				_lblNames[i].Location = new Point(_xNames,_yName + i * _yStep);
@@ -214,37 +237,32 @@ namespace Fred68.InputForms
 					lblxmax = _lblNames[i].Right;
 			}
 
-			for(int i = 0;i < _fd.Count;i++)
+			for(int i = 0;i < _fd.Count;i++)				// Crea i controlli di input (textbox o checkbox)
 			{
 				bool isbool = _fd.Info(i).Dt.Get().GetType().ToString() == "System.Boolean";
 				if(!isbool)
 				{
 					_tbValues.Add(new TextBox());
-					((TextBox)_tbValues[i]).Text = (_fd.Info(i).Dt.Get()).ToString();
 				}
 				else
 				{
 					_tbValues.Add(new CheckBox());
-					((CheckBox)_tbValues[i]).Checked = _fd.Info(i).Dt.Get();
 				}
 				_tbValues[i].Location = new Point(lblxmax + _xSpace,_yValue + i * _yStep);
 				_tbValues[i].Name = $"{tbPrefixName}{i.ToString()}";
 				if(!isbool)
 					((TextBox)_tbValues[i]).TextAlign = HorizontalAlignment.Left;
 				_tbValues[i].Size = new Size(txtbWidt,int.Max(label1.Height,textBox1.Height));
-				_tbValues[i].Enabled = !_fd.Info(i).isReadonly;		// Usa Enabled, valido per tutti i controlli, invece che Readonly
-				if(!_fd.Info(i).isReadonly)
-				{
-					if(!isbool)
-						((TextBox)_tbValues[i]).TextChanged += txtChanged_Handler;
-					else
-						((CheckBox)_tbValues[i]).CheckedChanged += txtChanged_Handler;
-				}
+				if(isbool)
+					_tbValues[i].Enabled = !_fd.Info(i).isReadonly;		// Enabled
+				else
+					((TextBox)_tbValues[i]).ReadOnly = _fd.Info(i).isReadonly;		// Readonly
 				this.Controls.Add(_tbValues[i]);
 				if(_tbValues[i].Right > tbxmax)
 					tbxmax = _tbValues[i].Right;
 			}
-			for(int i = 0;i < _fd.Count;i++)
+
+			for(int i = 0;i < _fd.Count;i++)				// Crea le etichette con i tipo di dato	
 			{
 				_lblTypes[i] = new Label();
 				_lblTypes[i].Location = new Point(tbxmax + _xSpace,_yName + i * _yStep);
@@ -262,14 +280,27 @@ namespace Fred68.InputForms
 			this.Controls.Remove(label1);                   // Elimina label e textbox
 			this.Controls.Remove(textBox1);
 
+			UpdateInputData();								// Aggiorna i contenuti
+
+			for(int i = 0;i < _fd.Count;i++)				// Imposta handler per text e checked changed (DOPO aver aggiornato i contenuti)
+			{
+				bool isbool = _fd.Info(i).Dt.Get().GetType().ToString() == "System.Boolean";
+				if(!_fd.Info(i).isReadonly)
+				{
+					if(!isbool)
+						((TextBox)_tbValues[i]).TextChanged += txtChanged_Handler;
+					else
+						((CheckBox)_tbValues[i]).CheckedChanged += txtChanged_Handler;
+				}
+			}
+							
+			SetDialogButtonHandlers();						// Imposta i pulsanti
 			btOK.Location = new Point(tbxmax - btOK.Width,_yValue + _fd.Count * _yStep + _ySpace);
-			btOK.Click += btOK_Click;
 			btCancel.Location = btOK.Location - new Size(btCancel.Width + _xSpace,0);
 
 			int xMax, yMax;                                 // Ridimensiona la dialog
 			xMax = lbvmax + _xSpace;
 			yMax = btOK.Bottom + _ySpace;
-
 			this.ClientSize = new Size(xMax,yMax);
 			this.StartPosition = FormStartPosition.CenterScreen;
 
@@ -295,10 +326,13 @@ namespace Fred68.InputForms
 			ResumeLayout(true);
 
 		}
-		private Button btOK;
-		private Label label1;
-		private TextBox textBox1;
-		private Button btCancel;
+
+		private void SetDialogButtonHandlers()
+		{
+			btOK.Click += btOK_Click;
+			btOK.DialogResult = _confirmData ? DialogResult.None : DialogResult.OK;
+			btCancel.DialogResult = DialogResult.Cancel;
+		}
 
 		private void txtChanged_Handler(object sender,EventArgs e)
 		{
@@ -307,6 +341,10 @@ namespace Fred68.InputForms
 			if(int.TryParse(sname.Substring(InputForm.tbPrefixName.Length),out i))
 			{
 				_fd.Info(i).isModified = true;
+				if(_confirmData)
+				{
+					btOK.Text = "Set";
+				}
 			}
 			else
 			{
@@ -315,7 +353,10 @@ namespace Fred68.InputForms
 
 		}
 
-		private void btOK_Click(object sender,EventArgs e)
+		/// <summary>
+		/// Update FormData with form content
+		/// </summary>
+		private void UpdateFormData()
 		{
 			for(int i = 0;i < _fd.Count;i++)
 			{
@@ -382,6 +423,51 @@ namespace Fred68.InputForms
 
 				}
 
+			}
+		}
+
+		/// <summary>
+		/// Update form content with FormData
+		/// </summary>
+		private void UpdateInputData()
+		{
+			for(int i = 0;i < _fd.Count;i++)
+			{
+				bool isbool = _fd.Info(i).Dt.Get().GetType().ToString() == "System.Boolean";
+				if(!isbool)
+				{
+					_tbValues.Add(new TextBox());
+					((TextBox)_tbValues[i]).Text = (_fd.Info(i).Dt.Get()).ToString();
+				}
+				else
+				{
+					_tbValues.Add(new CheckBox());
+					((CheckBox)_tbValues[i]).Checked = _fd.Info(i).Dt.Get();
+				}
+			}
+		}
+
+		private void btOK_Click(object sender,EventArgs e)
+		{
+			
+			#warning IMPOSTARE DOVE SERVE: _fd.isValid = true
+			UpdateFormData();
+			if(_confirmData)
+			{
+				if(_fd.isModified)
+				{
+					MessageBox.Show("Modificato");
+					UpdateInputData();
+					_fd.isModified = false;
+					this.DialogResult = DialogResult.None;
+					btOK.Text = "OK";
+				}
+				else
+				{
+					MessageBox.Show("Invariato");
+					this.DialogResult = DialogResult.OK;
+					return;
+				}
 			}
 		}
 	}
