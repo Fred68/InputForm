@@ -1,9 +1,12 @@
-﻿
-using Fred68.GenDictionary;
+﻿using Fred68.GenDictionary;
 using InputForms;
 using System.Text;
 using System.Windows.Forms;
 using System.Xml.Linq;
+
+#pragma warning disable CS8602        // Dereferenziamento di un riferimento eventualmente Null.                                                                                                                                                                                        
+#pragma warning disable CS8603        // Possibile riferimento Null restituito.                                               
+#pragma warning disable CS8622        // Il supporto dei valori Null dei tipi riferimento nel tipo di parametro non corrisponde al delegato di destinazione                                                                                                                           
 
 namespace Fred68.InputForms
 {
@@ -18,10 +21,10 @@ namespace Fred68.InputForms
 		/// </summary>
 		public class InputInfo
 		{
-			string	_name;
+			string?	_name;
 			bool	_readonly;
 			bool	_dropdown;		// Valore Dat string, ma on click apre nuova dialog con la lista
-			Dat		_dat;
+			Dat?	_dat;
 			bool	_isSet;
 			bool	_isModified;
 
@@ -91,20 +94,20 @@ namespace Fred68.InputForms
 
 		}
 
-		static Icon _icon;		// File di icona
+		static Icon? _icon;		// File di icona
 
 		FormData _fd;
 		int _maxTxtLength;
-		Label[] _lblNames;
-		Label[] _lblTypes;
-		List<Control> _tbValues;
-		bool _isOk;
+		Label[]? _lblNames;
+		Label[]? _lblTypes;
+		List<Control>? _tbValues;
+		//bool _isOk;
 		bool _confirmData;
 
-		private Button btOK;
-		private Label label1;
-		private TextBox textBox1;
-		private Button btCancel;
+		private Button? btOK;
+		private Label? label1;
+		private TextBox? textBox1;
+		private Button? btCancel;
 
 
 		private void InitializeComponent()
@@ -173,7 +176,7 @@ namespace Fred68.InputForms
 
 		public InputForm(FormData fd, bool confirmData = false, int maxTxtLength = 50)
 		{
-			_isOk = true;
+			//_isOk = true;
 			_fd = fd;
 			_maxTxtLength = maxTxtLength;
 			_confirmData = confirmData;
@@ -320,7 +323,7 @@ namespace Fred68.InputForms
 				if(by)
 					sb.AppendLine("Dimensioni eccessive Y");
 				MessageBox.Show(sb.ToString(),"Error",MessageBoxButtons.OK,MessageBoxIcon.Error);
-				_isOk = false;
+				//_isOk = false;
 			}
 
 			ResumeLayout(true);
@@ -331,6 +334,7 @@ namespace Fred68.InputForms
 		{
 			btOK.Click += btOK_Click;
 			btOK.DialogResult = _confirmData ? DialogResult.None : DialogResult.OK;
+			btCancel.Click += btCancel_Click;
 			btCancel.DialogResult = DialogResult.Cancel;
 		}
 
@@ -449,26 +453,39 @@ namespace Fred68.InputForms
 
 		private void btOK_Click(object sender,EventArgs e)
 		{
-			
-			#warning IMPOSTARE DOVE SERVE: _fd.isValid = true
 			UpdateFormData();
 			if(_confirmData)
 			{
 				if(_fd.isModified)
 				{
-					MessageBox.Show("Modificato");
 					UpdateInputData();
 					_fd.isModified = false;
+					_fd.isValid = true;
 					this.DialogResult = DialogResult.None;
 					btOK.Text = "OK";
 				}
 				else
 				{
-					MessageBox.Show("Invariato");
 					this.DialogResult = DialogResult.OK;
 					return;
 				}
 			}
+			else
+			{
+				_fd.isValid = true;
+			}
+		}
+
+		private void btCancel_Click(object sender,EventArgs e)
+		{
+			this.DialogResult = DialogResult.Cancel;
+			_fd.isValid = false;
+			MessageBox.Show("Annullato");
 		}
 	}
 }
+
+
+#pragma warning restore CS8602	// Dereferenziamento di un riferimento eventualmente Null.                                                            
+#pragma warning restore CS8603	// Possibile riferimento Null restituito.
+#pragma warning restore CS8622	// Il supporto dei valori Null dei tipi riferimento nel tipo di parametro non corrisponde al delegato di destinazione
