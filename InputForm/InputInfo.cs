@@ -5,16 +5,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Fred68.InputForms
+namespace InputForms
 {
-	public class InputInfo
-	{
-			string	_name;
+		public class InputInfo
+		{
+			string?	_name;
 			bool	_readonly;
-			bool	_dropdown;		// Valore Dat string, ma on click apre nuova dialog con la lista
-			Dat		_dat;
+			bool	_dropdown;		// Valore Dat string, ma on click apre nuova dialog con la lista... ANCORA DA FARE
+			Dat?	_dat;
 			bool	_isSet;
-			bool	_isModified;
+			bool	_isModified;	// Modificato
 
 			public string Name {get {return _name;}}
 			public bool isReadonly {get {return _readonly;}}
@@ -48,6 +48,9 @@ namespace Fred68.InputForms
 				_isSet = false;
 			}
 
+			/***********************************/
+			/* CTORs vari                      */
+			/***********************************/
 			public InputInfo(string name, int x, bool read_only = false, bool dropdown = false)
 			{
 				_Set(name, read_only, dropdown);
@@ -79,8 +82,44 @@ namespace Fred68.InputForms
 				Dt = new Dat(x);
 			}
 
+			/// <summary>
+			/// Copy constructor
+			/// </summary>
+			/// <param name="prev"></param>
+			public InputInfo(InputInfo prev)
+			{
+				_Set(prev.Name, prev._readonly, prev._dropdown);
+				TypeVar tp = prev.Dt.Type;
+				switch(tp)
+				{
+					case TypeVar.BOOL:
+					{
+					#error COMPLETARE !!!!
+					}
+					break;
+					case TypeVar.STR:
+					{
+
+					}
+					break;
+					case TypeVar.FLOAT:
+					{
+
+					}
+					break;
+					case TypeVar.DOUBLE:
+					{
+
+					}
+					break;
+					case TypeVar.DATE:
+					{
+
+					}
+					break;
+				}
+			}
 
 		}
-
 
 }

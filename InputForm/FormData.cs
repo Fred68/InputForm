@@ -1,4 +1,4 @@
-﻿using Fred68.InputForms;
+﻿using InputForms;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +13,7 @@ namespace InputForms
 {
 	public class FormData
 	{
-		List<InputForm.InputInfo> data;
+		List<InputInfo> data;
 		bool _isValid;
 
 		/// <summary>
@@ -24,7 +24,7 @@ namespace InputForms
 		bool isFree(string name)
 		{
 			bool found = false;
-			foreach(InputForm.InputInfo info in data)
+			foreach(InputInfo info in data)
 			{
 				if(info.Name == name)
 				{
@@ -52,7 +52,7 @@ namespace InputForms
 			get
 			{
 				bool mod = false;
-				foreach (InputForm.InputInfo info in data)
+				foreach (InputInfo info in data)
 				{
 					if(info.isModified)
 					{
@@ -64,7 +64,7 @@ namespace InputForms
 			}
 			set
 			{
-				foreach (InputForm.InputInfo info in data)
+				foreach (InputInfo info in data)
 				{
 					info.isModified = value;
 				}
@@ -72,6 +72,9 @@ namespace InputForms
 			
 		}
 
+		/// <summary>
+		/// IsValid
+		/// </summary>
 		public bool isValid
 		{
 			get {return _isValid; }
@@ -83,14 +86,22 @@ namespace InputForms
 		/// </summary>
 		public FormData()
 		{
-			data = new List<InputForm.InputInfo>();
+			data = new List<InputInfo>();
 			_isValid = false;
 		}
 
+		/// <summary>
+		/// Add dynamic
+		/// </summary>
+		/// <param name="name"></param>
+		/// <param name="x"></param>
+		/// <param name="read_only"></param>
+		/// <param name="dropdown"></param>
+		/// <returns></returns>
 		public bool Add(string name, dynamic x, bool read_only = false, bool dropdown = false)
 		{
 			bool ret = isFree(name);
-			if(ret)	data.Add(new InputForm.InputInfo(name, x, read_only, dropdown));
+			if(ret)	data.Add(new InputInfo(name, x, read_only, dropdown));
 			return ret;
 
 		}
@@ -105,7 +116,7 @@ namespace InputForms
 		public bool Add(string name, int x, bool read_only = false, bool dropdown = false)
 		{
 			bool ret = isFree(name);
-			if(ret)	data.Add(new InputForm.InputInfo(name, x, read_only, dropdown));
+			if(ret)	data.Add(new InputInfo(name, x, read_only, dropdown));
 			return ret;
 		}
 		/// <summary>
@@ -119,7 +130,7 @@ namespace InputForms
 		public bool Add(string name, bool x, bool read_only = false, bool dropdown = false)
 		{
 			bool ret = isFree(name);
-			data.Add(new InputForm.InputInfo(name, x, read_only, dropdown));
+			data.Add(new InputInfo(name, x, read_only, dropdown));
 			return ret;
 		}
 		/// <summary>
@@ -133,7 +144,7 @@ namespace InputForms
 		public bool Add(string name, string x, bool read_only = false, bool dropdown = false)
 		{
 			bool ret = isFree(name);
-			data.Add(new InputForm.InputInfo(name, x, read_only, dropdown));
+			data.Add(new InputInfo(name, x, read_only, dropdown));
 			return ret;
 		}
 		/// <summary>
@@ -147,7 +158,7 @@ namespace InputForms
 		public bool Add(string name, float x, bool read_only = false, bool dropdown = false)
 		{
 			bool ret = isFree(name);
-			data.Add(new InputForm.InputInfo(name, x, read_only, dropdown));
+			data.Add(new InputInfo(name, x, read_only, dropdown));
 			return ret;
 		}
 		/// <summary>
@@ -161,7 +172,7 @@ namespace InputForms
 		public bool Add(string name, double x, bool read_only = false, bool dropdown = false)
 		{	
 			bool ret = isFree(name);
-			data.Add(new InputForm.InputInfo(name, x, read_only, dropdown));
+			data.Add(new InputInfo(name, x, read_only, dropdown));
 			return ret;
 		}
 		/// <summary>
@@ -175,7 +186,7 @@ namespace InputForms
 		public bool Add(string name, DateTime x, bool read_only = false, bool dropdown = false)
 		{
 			bool ret = isFree(name);
-			data.Add(new InputForm.InputInfo(name, x, read_only, dropdown));
+			data.Add(new InputInfo(name, x, read_only, dropdown));
 			return ret;
 		}
 
@@ -189,7 +200,7 @@ namespace InputForms
 		{
 			get
 			{
-				foreach(InputForm.InputInfo info in data)
+				foreach(InputInfo info in data)
 				{
 					if(info.Name == key)
 					{
@@ -199,6 +210,7 @@ namespace InputForms
 				throw new KeyNotFoundException();		
 			}
 		}
+
 		/// <summary>
 		/// Name (key) esists 
 		/// </summary>
@@ -215,16 +227,16 @@ namespace InputForms
 		/// <returns></returns>
 		public IEnumerable<string> Names()
 		{
-			foreach(InputForm.InputInfo info in data)
+			foreach(InputInfo info in data)
 			{
 				yield return info.Name;
 			}
 			yield break;
 		}
 
-		public IEnumerable<InputForm.InputInfo> Info()
+		public IEnumerable<InputInfo> Info()
 		{
-			foreach(InputForm.InputInfo info in data)
+			foreach(InputInfo info in data)
 			{
 				yield return info;
 			}
@@ -235,7 +247,7 @@ namespace InputForms
 		/// </summary>
 		/// <returns></returns>
 
-		public InputForm.InputInfo Info(int index)
+		public InputInfo Info(int index)
 		{
 			return data[index];
 		}

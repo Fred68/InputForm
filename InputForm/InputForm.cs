@@ -8,92 +8,11 @@ using System.Xml.Linq;
 #pragma warning disable CS8603        // Possibile riferimento Null restituito.                                               
 #pragma warning disable CS8622        // Il supporto dei valori Null dei tipi riferimento nel tipo di parametro non corrisponde al delegato di destinazione                                                                                                                           
 
-namespace Fred68.InputForms
+namespace InputForms
 {
 	public class InputForm:Form
 	{
 		static string tbPrefixName = "_tbValue";
-		
-		/// <summary>
-		/// /////////////////////////////////////
-		/// Input info
-		/// /////////////////////////////////////
-		/// </summary>
-		public class InputInfo
-		{
-			string?	_name;
-			bool	_readonly;
-			bool	_dropdown;		// Valore Dat string, ma on click apre nuova dialog con la lista
-			Dat?	_dat;
-			bool	_isSet;
-			bool	_isModified;
-
-			public string Name {get {return _name;}}
-			public bool isReadonly {get {return _readonly;}}
-			public bool isDropdown {get {return _dropdown;}}
-			public bool isModified {get {return _isModified;} set {_isModified = value;}}
-
-			/// <summary>
-			/// Set and access to data with:
-			/// dynamic Get()
-			/// new Dat(...)
-			/// static Type GetEqType(dynamic x)
-			/// </summary>
-			public Dat Dt {
-							get {
-								if(_isSet)
-									return _dat;
-								else
-									throw new Exception("Not initialized value");
-								}
-							set {
-								_dat = value;
-								_isSet = true;
-								}
-							}
-
-			void _Set(string name, bool read_only = false, bool dropdown = false)
-			{
-				_name = name;
-				_readonly = read_only;
-				_dropdown = dropdown;
-				_isSet = false;
-			}
-
-			public InputInfo(string name, int x, bool read_only = false, bool dropdown = false)
-			{
-				_Set(name, read_only, dropdown);
-				Dt = new Dat(x);
-			}
-			public InputInfo(string name, bool x, bool read_only = false, bool dropdown = false)
-			{
-				_Set(name, read_only, dropdown);
-				Dt = new Dat(x);
-			}
-			public InputInfo(string name, string x, bool read_only = false, bool dropdown = false)
-			{
-				_Set(name, read_only, dropdown);
-				Dt = new Dat(x);
-			}
-			public InputInfo(string name, float x, bool read_only = false, bool dropdown = false)
-			{
-				_Set(name, read_only, dropdown);
-				Dt = new Dat(x);
-			}
-			public InputInfo(string name, double x, bool read_only = false, bool dropdown = false)
-			{
-				_Set(name, read_only, dropdown);
-				Dt = new Dat(x);
-			}
-			public InputInfo(string name, DateTime x, bool read_only = false, bool dropdown = false)
-			{
-				_Set(name, read_only, dropdown);
-				Dt = new Dat(x);
-			}
-
-
-		}
-
 		static Icon? _icon;		// File di icona
 
 		FormData _fd;
@@ -101,7 +20,6 @@ namespace Fred68.InputForms
 		Label[]? _lblNames;
 		Label[]? _lblTypes;
 		List<Control>? _tbValues;
-		//bool _isOk;
 		bool _confirmData;
 
 		private Button? btOK;
@@ -176,13 +94,15 @@ namespace Fred68.InputForms
 
 		public InputForm(FormData fd, bool confirmData = false, int maxTxtLength = 50)
 		{
-			//_isOk = true;
 			_fd = fd;
+
+			#warning -->> >> >> IMPORTANTE: FARE PRIMA UNA COPIA DI _fd e lavorare su quella. Poi, se BT_OK, ricopiarla in quella originaria.
+
 			_maxTxtLength = maxTxtLength;
 			_confirmData = confirmData;
 
 			StringBuilder sb = new StringBuilder();
-			foreach(InputForm.InputInfo info in _fd.Info())
+			foreach(InputInfo info in _fd.Info())
 			{
 				sb.AppendLine($"{info.Name}:{info.Dt.Get()}");
 			}
@@ -459,7 +379,10 @@ namespace Fred68.InputForms
 				if(_fd.isModified)
 				{
 					UpdateInputData();
-					_fd.isModified = false;
+					
+					#warning ***>>> Aggiornare lista campi modificati in _fd !!!!
+
+					_fd.isModified = false;	
 					_fd.isValid = true;
 					this.DialogResult = DialogResult.None;
 					btOK.Text = "OK";
