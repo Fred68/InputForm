@@ -90,34 +90,8 @@ namespace InputForms
 			{
 				_Set(prev.Name, prev._readonly, prev._dropdown);
 				TypeVar tp = prev.Dt.Type;
-				switch(tp)
-				{
-					case TypeVar.BOOL:
-					{
-					#error COMPLETARE !!!!
-					}
-					break;
-					case TypeVar.STR:
-					{
-
-					}
-					break;
-					case TypeVar.FLOAT:
-					{
-
-					}
-					break;
-					case TypeVar.DOUBLE:
-					{
-
-					}
-					break;
-					case TypeVar.DATE:
-					{
-
-					}
-					break;
-				}
+				_dat = new Dat(prev.Dt.Get());
+				_isSet = true;
 			}
 
 		}

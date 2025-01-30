@@ -16,6 +16,7 @@ namespace InputForms
 		static Icon? _icon;		// File di icona
 
 		FormData _fd;
+		//FormData _fdOrigin;
 		int _maxTxtLength;
 		Label[]? _lblNames;
 		Label[]? _lblTypes;
@@ -94,15 +95,15 @@ namespace InputForms
 
 		public InputForm(FormData fd, bool confirmData = false, int maxTxtLength = 50)
 		{
+			//_fdOrigin = fd;
+			//_fd = new FormData(fd);
+
 			_fd = fd;
-
-			#warning -->> >> >> IMPORTANTE: FARE PRIMA UNA COPIA DI _fd e lavorare su quella. Poi, se BT_OK, ricopiarla in quella originaria.
-
 			_maxTxtLength = maxTxtLength;
 			_confirmData = confirmData;
 
 			StringBuilder sb = new StringBuilder();
-			foreach(InputInfo info in _fd.Info())
+			foreach(InputInfo info in _fd.InputInfo())
 			{
 				sb.AppendLine($"{info.Name}:{info.Dt.Get()}");
 			}
@@ -265,6 +266,7 @@ namespace InputForms
 			if(int.TryParse(sname.Substring(InputForm.tbPrefixName.Length),out i))
 			{
 				_fd.Info(i).isModified = true;
+				_fd.isModified = true;
 				if(_confirmData)
 				{
 					btOK.Text = "Set";
@@ -379,9 +381,6 @@ namespace InputForms
 				if(_fd.isModified)
 				{
 					UpdateInputData();
-					
-					#warning ***>>> Aggiornare lista campi modificati in _fd !!!!
-
 					_fd.isModified = false;	
 					_fd.isValid = true;
 					this.DialogResult = DialogResult.None;
@@ -389,6 +388,8 @@ namespace InputForms
 				}
 				else
 				{
+					//_fdOrigin = _fd;			// ?????
+
 					this.DialogResult = DialogResult.OK;
 					return;
 				}

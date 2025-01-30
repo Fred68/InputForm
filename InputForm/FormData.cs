@@ -15,6 +15,7 @@ namespace InputForms
 	{
 		List<InputInfo> data;
 		bool _isValid;
+		bool _isModified;
 
 		/// <summary>
 		/// Is name (key) free ?
@@ -51,6 +52,19 @@ namespace InputForms
 		{
 			get
 			{
+				return _isModified;
+			}
+			set
+			{
+				_isModified = value;
+			}
+			
+		}
+
+		public bool isAnyModified
+		{
+			get
+			{
 				bool mod = false;
 				foreach (InputInfo info in data)
 				{
@@ -69,7 +83,6 @@ namespace InputForms
 					info.isModified = value;
 				}
 			}
-			
 		}
 
 		/// <summary>
@@ -88,7 +101,21 @@ namespace InputForms
 		{
 			data = new List<InputInfo>();
 			_isValid = false;
+			_isModified = false;
 		}
+
+		/// <summary>
+		/// Copy constructor
+		/// </summary>
+		/// <param name="prev"></param>
+		public FormData(FormData prev) : this()
+		{
+			foreach(InputInfo iif in prev.data)
+			{
+				data.Add(new InputInfo(iif));
+			}
+		}
+
 
 		/// <summary>
 		/// Add dynamic
@@ -234,7 +261,7 @@ namespace InputForms
 			yield break;
 		}
 
-		public IEnumerable<InputInfo> Info()
+		public IEnumerable<InputInfo> InputInfo()
 		{
 			foreach(InputInfo info in data)
 			{
